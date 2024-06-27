@@ -209,11 +209,11 @@
 
             if (flow < min_flow_value) {
                 validFlow = false;
-                errorTextFlow = `The flow is lesser than the minimum value ${min_flow_value} m&sup3;/s <br>`;
+                errorTextFlow = `The flow is lesser than the minimum value ${min_flow_value * 3600} m&sup3;/h <br>`;
             }
             else if (flow > max_flow_value) {
                 validFlow = false;
-                errorTextFlow = `The flow is higher than the maximum value ${max_flow_value} m&sup3;/s <br>`;
+                errorTextFlow = `The flow is higher than the maximum value ${max_flow_value * 3600} m&sup3;/h <br>`;
             }
             else if (flow > min_flow_value && flow < mid_flow_value) {
                 validFlow = true;
@@ -332,7 +332,7 @@
 
                 resultDiv.innerHTML = ` Manometric height: ${manometric_height} m <br>
                                         Motor Power: ${power} W <br>
-                                        flow: ${flow} m&sup3;/s <br>
+                                        flow: ${tankVolume / fillingTime} m&sup3;/h <br>
                                         Energy spent for a filling: ${energy} Wh <br>
                                         Cost per filling: ${cost_per_filling} frs`;
             }
