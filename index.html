@@ -192,7 +192,7 @@
             const tankVolume = parseFloat(document.getElementById('tankVolume').value);
             const fillingTime = parseFloat(document.getElementById('fillingTime').value);
             const dischargeDiameter = parseFloat(document.getElementById('dischargeDiameter').value) * 0.001;
-            const viscosity = 1.64 * Math.pow(10, -4);
+            const viscosity = 1.004 * Math.pow(10, -6);
 
             const flow = tankVolume / (3600 * fillingTime);
         
@@ -317,7 +317,7 @@
                 const dischargeDiameter = parseFloat(document.getElementById('dischargeDiameter').value) * 0.001;
                 const dischargeHeight = parseFloat(document.getElementById('dischargeHeight').value);
                 const numDischargeElbows = parseFloat(document.getElementById('numDischargeElbows').value);
-                const viscosity = 1.64 * Math.pow(10, -4);
+                const viscosity = 1.004 * Math.pow(10, -6);
 
                 let [validFlow, flow, lambda, errorTextFlow] = flowControl();
                 let g = 9.81;
