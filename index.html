@@ -229,7 +229,8 @@
 
         function computeDeltaHeight(flow, lambda, diameter, length) {
             let fraction = (4 * flow) / (Math.PI * Math.pow(diameter, 2));
-            let delta_height = lambda * (length / diameter) * Math.pow(fraction, 2);
+            let g = 9.81;
+            let delta_height = lambda * (length / (diameter * 2 * g)) * Math.pow(fraction, 2);
             return delta_height;
         }
 
