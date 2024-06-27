@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pump Dimensioning Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url(mining.jpg);
+            margin: 20px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        form {
+            max-width: 400px;
+            margin: auto;
+            background-color: #f2f2f2;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #result {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+
+        .error {
+            color: red;
+            display: none;
+        }
+
+        #errors {
+            color: red;
+            display: none;
+        }
+
+        .description {
+            font-size: 0.9em;
+            color: #555;
+        }
+
+        .conditional-field {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <h1>Pump Dimensioning</h1>
+    <form id="pumpForm">
+        <label for="tankVolume">Tank volume (in m<sup>3</sup>):</label>
+        <input type="number" step="any" min="0.01" id="tankVolume" name="tankVolume" oninput="validateField(this, 'float', 0)" required>
+        <span id="tankVolumeError" class="error">Invalid input. Please enter a stritly positive float.</span><br>
+
+        <label for="fillingTime">Filling time (in hours):</label>
+        <input type="number" step="any" min="0.01" id="fillingTime" name="fillingTime" oninput="validateField(this, 'float', 0)" required>
+        <span id="fillingTimeError" class="error">Invalid input. Please enter a stritly positive float.</span><br>
+
+        <label for="wellDepth">Well depth (in meters):</label>
+        <input type="number" step="any" min="0.01" id="wellDepth" name="wellDepth" oninput="validateField(this, 'float', 0)" required>
+        <span id="wellDepthError" class="error">Invalid input. Please enter a stritly positive float.</span><br>
+
+        <label for="numSuctionElbows">Number of Suction Elbows:</label>
+        <input type="number" step="1" id="numSuctionElbows" name="numSuctionElbows" oninput="validateField(this, 'int', 1)" required>
+        <span id="numSuctionElbowsError" class="error">Invalid input. Please enter a strictly positive integer higher than 1.</span><br>
+
+        <label for="suctionDiameter">Suction Diameter (in mm):</label>
+        <input type="number" step="any" id="suctionDiameter" name="suctionDiameter" oninput="validateField(this, 'float', 0)" required>
+        <span id="suctionDiameterError" class="error">Please choose a diameter between 50 and 600 mm.</span><br>
+
+        <label for="suctionLength">Suction Length (in meters):</label>
+        <input type="number" step="any" id="suctionLength" name="suctionLength" oninput="validateField(this, 'float', 0)" required>
+        <span id="suctionLengthError" class="error">Invalid input. Please enter a strictly positive float.</span><br>
+
+        <label for="numDischargeElbows">Number of Discharge Elbows:</label>
+        <input type="number" step="1" id="numDischargeElbows" name="numDischargeElbows" oninput="validateField(this, 'int', 2)" required>
+        <span id="numDischargeElbowsError" class="error">Invalid input. Please enter a strictly positive integer higher than 2.</span><br>
+
+        <label for="dischargeDiameter">Discharge Diameter (in mm):</label>
+        <input type="number" step="any" id="dischargeDiameter" name="dischargeDiameter" oninput="validateField(this, 'float', 0)" required>
+        <span id="dischargeDiameterError" class="error">Please choose a diameter between 50 and 600 mm.</span><br>
+
+        <label for="dischargeHeight">Discharge Height (in meters):</label>
+        <input type="number" step="any" id="dischargeHeight" name="dischargeHeight" oninput="validateField(this, 'float', 0)" required>
+        <span id="dischargeHeightError" class="error">Invalid input. Please enter a strictly positive float.</span><br>
+
+        <label for="dischargeLength">Discharge Length (in meters):</label>
+        <input type="number" step="any" id="dischargeLength" name="dischargeLength" oninput="validateField(this, 'float', 0)" required>
+        <span id="dischargeLengthError" class="error">Invalid input. Please enter a strictly positive float.</span><br>
+
+        <button type="button" onclick={submitForm()}>Results</button>
+    </form>
+
+    <div id="errors"></div>
+    <div id="result"></div>
+
+
+    <script>
+        
+
+        function validateField(input, type, minValue) {
+            const value = type === 'float' ? parseFloat(input.value) : parseInt(input.value);
+            const errorSpan = document.getElementById(input.id + 'Error');
+
+            if (type === 'int') {
+                if (isNaN(value) || value <= minValue || !Number.isInteger(Number(input.value))) {
+                    errorSpan.style.display = 'block';
+                } else {
+                    errorSpan.style.display = 'none';
+                }
+            } else {
+                if (isNaN(value) || value <= minValue) {
+                    errorSpan.style.display = 'block';
+                } else {
+                    errorSpan.style.display = 'none';
+                }
+            }
+        }
+
+        function VerifySuctionParameters() {
+            const suctionLength = parseFloat(document.getElementById('suctionLength').value);
+            const suctionDiameter = parseFloat(document.getElementById('suctionDiameter').value) * 0.001;
+            const wellDepth = parseFloat(document.getElementById('wellDepth').value);
+            const numSuctionElbows = parseFloat(document.getElementById('numSuctionElbows').value);
+
+            let min_value = wellDepth + 1.5 * numSuctionElbows * suctionDiameter;
+            if (suctionLength < min_value) {
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
+
+        function verifyDischargeDiameter() {
+            const suctionDiameter = parseFloat(document.getElementById('suctionDiameter').value);
+            const dischargeDiameter = parseFloat(document.getElementById('dischargeDiameter').value);
+
+            if (dischargeDiameter > suctionDiameter) {
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
+
+        function VerifyDischargeParameters() {
+            const dischargeLength = parseFloat(document.getElementById('dischargeLength').value);
+            const dischargeDiameter = parseFloat(document.getElementById('dischargeDiameter').value) * 0.001;
+            const dischargeHeight = parseFloat(document.getElementById('dischargeHeight').value);
+            const numDischargeElbows = parseFloat(document.getElementById('numDischargeElbows').value);
+
+            let min_value = dischargeHeight + 1.5 * numDischargeElbows * dischargeDiameter;
+            if (dischargeLength < min_value) {
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
+
+        function flowControl() {
+            const tankVolume = parseFloat(document.getElementById('tankVolume').value);
+            const fillingTime = parseFloat(document.getElementById('fillingTime').value);
+            const dischargeDiameter = parseFloat(document.getElementById('dischargeDiameter').value) * 0.001;
+            const viscosity = 1.64 * Math.pow(10, -4);
+
+            const flow = tankVolume / (3600 * fillingTime);
+        
+
+            const min_flow_value = (2000 * Math.PI * viscosity * dischargeDiameter) / 4;
+            const mid_flow_value = (3000 * Math.PI * viscosity * dischargeDiameter) / 4;
+            const max_flow_value = (10000 * Math.PI * viscosity * dischargeDiameter) / 4;
+
+            const reynolds_number = (4 * flow) / (Math.PI * viscosity * dischargeDiameter);
+
+            let validFlow = true;
+            let lambda = 1;
+            let errorTextFlow = "";
+
+            if (flow < min_flow_value) {
+                validFlow = false;
+                errorTextFlow = `The flow is lesser than the minimum value ${min_flow_value} m&sup3;/s <br>`;
+            }
+            else if (flow > max_flow_value) {
+                validFlow = false;
+                errorTextFlow = `The flow is higher than the maximum value ${max_flow_value} m&sup3;/s <br>`;
+            }
+            else if (flow > min_flow_value && flow < mid_flow_value) {
+                validFlow = true;
+                lambda = 64 / reynolds_number;
+            }
+            else if (flow >= mid_flow_value && flow < max_flow_value){
+                validFlow = true;
+                lambda = 0.3164 * Math.pow(reynolds_number, -0.25);
+            }
+            return [validFlow, flow, lambda, errorTextFlow];
+
+        }
+
+        function computeDeltaHeight(flow, lambda, diameter, length) {
+            let fraction = (4 * flow) / (Math.PI * Math.pow(diameter, 2));
+            let delta_height = lambda * (length / diameter) * Math.pow(fraction, 2);
+            return delta_height;
+        }
+
+        function computeDeltaHeightBis(flow, viscosity, diameter) {
+            const g = 9.81;
+            let delta_height_bis = ((16 * Math.pow(flow, 2)) / (2 * Math.pow((Math.PI * diameter), 2) * g)) * (0.13 + Math.pow(diameter, (9 / 2)) * ((Math.PI * viscosity) / (8 * flow)))
+            return delta_height_bis;
+        }
+
+        function computeManometricHeight(flow, lambda, viscosity, number_suction_elbows, suction_height, suction_diameter, suction_length, number_discharge_elbows, discharge_height, discharge_diameter, discharge_length) {
+            let delta_suction_height = computeDeltaHeight(flow, lambda, suction_diameter, suction_length);
+            let delta_discharge_height = computeDeltaHeight(flow, lambda, discharge_diameter, discharge_length);
+            
+
+            let delta_suction_height_bis = computeDeltaHeightBis(flow, viscosity, suction_diameter);
+            let delta_discharge_height_bis = computeDeltaHeightBis(flow, viscosity, discharge_diameter);
+
+            let manometric_height = suction_height + discharge_height + delta_suction_height + delta_discharge_height + number_suction_elbows * delta_suction_height_bis + number_discharge_elbows * delta_discharge_height_bis;
+
+            return manometric_height;
+        }
+
+        function compileAllErrors() {
+            const errorSpan = document.getElementById("errors");
+            let errorToDisplay = false;
+            let errorText = "";
+
+            let [validFlow, flow, lambda, errorTextFlow] = flowControl();
+
+            if (!VerifySuctionParameters()) {
+                errorText = errorText + "The suction length is too small in comparison to the others suction parameters<br>";
+                errorToDisplay = true;
+            }
+            if (!VerifySuctionParameters()) {
+                errorText = errorText + "The discharge diameter is too high<br>";
+                errorToDisplay = true;
+            }
+            if (!VerifyDischargeParameters()) {
+                errorText = errorText + "The discharge length is too small in comparison to the others discharge parameters<br>";
+                errorToDisplay = true;
+            }
+            if (!validFlow) {
+                errorText = errorText + errorTextFlow;
+                errorToDisplay = true;
+            }
+
+            if (errorSpan) errorSpan.innerHTML = errorText;
+            return errorToDisplay;
+        }
+
+        function validateForm() {
+            const inputs = document.querySelectorAll('#pumpForm input');
+            let isValid = true;
+            const errorSpan = document.getElementById("errors");
+
+            inputs.forEach(input => {
+                const type = input.id.includes('Elbows') ? 'int' : 'float';
+                const minValue = input.id.includes('numSuctionElbows') ? 1 : (input.id.includes('numDischargeElbows') ? 2 : 0);
+                validateField(input, type, minValue);
+                if (document.getElementById(input.id + 'Error').style.display === 'block') {
+                    isValid = false;
+                }
+            });
+
+            if (compileAllErrors()) {
+                errorSpan.style.display = "block";
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        function submitForm() {
+            const resultDiv = document.getElementById('result');
+
+            if (validateForm()) {
+                const tankVolume = parseFloat(document.getElementById('tankVolume').value);
+                const fillingTime = parseFloat(document.getElementById('fillingTime').value);
+                const wellDepth = parseFloat(document.getElementById('wellDepth').value);
+                const numSuctionElbows = parseFloat(document.getElementById('numSuctionElbows').value);
+                const suctionLength = parseFloat(document.getElementById('suctionLength').value);
+                const suctionDiameter = parseFloat(document.getElementById('suctionDiameter').value) * 0.001;
+                const dischargeLength = parseFloat(document.getElementById('dischargeLength').value);
+                const dischargeDiameter = parseFloat(document.getElementById('dischargeDiameter').value) * 0.001;
+                const dischargeHeight = parseFloat(document.getElementById('dischargeHeight').value);
+                const numDischargeElbows = parseFloat(document.getElementById('numDischargeElbows').value);
+                const viscosity = 1.64 * Math.pow(10, -4);
+
+                let [validFlow, flow, lambda, errorTextFlow] = flowControl();
+                let g = 9.81;
+                let density = 1000;
+
+                let manometric_height = computeManometricHeight(flow, lambda, viscosity, numSuctionElbows, wellDepth, suctionDiameter, suctionLength, numDischargeElbows, dischargeHeight, dischargeDiameter, dischargeLength);
+
+                let power = density * g * manometric_height * flow;
+
+                let energy = power * fillingTime;
+
+                let cost_per_filling = 0.05 * energy;
+
+                resultDiv.innerHTML = ` Manometric height: ${manometric_height} m <br>
+                                        Motor Power: ${power} W <br>
+                                        flow: ${flow} m&sup3;/s <br>
+                                        Energy spent for a filling: ${energy} Wh <br>
+                                        Cost per filling: ${cost_per_filling} frs`;
+            }
+            else {
+                resultDiv.innerHTML = "Form data is invalid. Please correct the errors and try again.";
+            }
+        }
+
+
+    </script>
+</body>
+</html>
