@@ -78,43 +78,43 @@
     <h1>Pump Dimensioning</h1>
     <form id="pumpForm">
         <label for="tankVolume">Tank volume (in m<sup>3</sup>):</label>
-        <input type="number" step="any" min="0.01" id="tankVolume" name="tankVolume" oninput="validateField(this, 'float', 0)" required>
+        <input type="number" step="any" min="0.01" id="tankVolume" name="tankVolume" oninput="validateField(this, 'float', 0, Infinity)" required>
         <span id="tankVolumeError" class="error">Invalid input. Please enter a stritly positive float.</span><br>
 
         <label for="fillingTime">Filling time (in hours):</label>
-        <input type="number" step="any" min="0.01" id="fillingTime" name="fillingTime" oninput="validateField(this, 'float', 0)" required>
+        <input type="number" step="any" min="0.01" id="fillingTime" name="fillingTime" oninput="validateField(this, 'float', 0, Infinity)" required>
         <span id="fillingTimeError" class="error">Invalid input. Please enter a stritly positive float.</span><br>
 
         <label for="wellDepth">Well depth (in meters):</label>
-        <input type="number" step="any" min="0.01" id="wellDepth" name="wellDepth" oninput="validateField(this, 'float', 0)" required>
+        <input type="number" step="any" min="0.01" id="wellDepth" name="wellDepth" oninput="validateField(this, 'float', 0, Infinity)" required>
         <span id="wellDepthError" class="error">Invalid input. Please enter a stritly positive float.</span><br>
 
         <label for="numSuctionElbows">Number of Suction Elbows:</label>
-        <input type="number" step="1" id="numSuctionElbows" name="numSuctionElbows" oninput="validateField(this, 'int', 1)" required>
+        <input type="number" step="1" id="numSuctionElbows" name="numSuctionElbows" oninput="validateField(this, 'int', 1, Infinity)" required>
         <span id="numSuctionElbowsError" class="error">Invalid input. Please enter a strictly positive integer higher than 1.</span><br>
 
         <label for="suctionDiameter">Suction Diameter (in mm):</label>
-        <input type="number" step="any" id="suctionDiameter" name="suctionDiameter" oninput="validateField(this, 'float', 0)" required>
+        <input type="number" step="any" id="suctionDiameter" name="suctionDiameter" oninput="validateField(this, 'float', 50, 600)" required>
         <span id="suctionDiameterError" class="error">Please choose a diameter between 50 and 600 mm.</span><br>
 
         <label for="suctionLength">Suction Length (in meters):</label>
-        <input type="number" step="any" id="suctionLength" name="suctionLength" oninput="validateField(this, 'float', 0)" required>
+        <input type="number" step="any" id="suctionLength" name="suctionLength" oninput="validateField(this, 'float', 0, Infinity)" required>
         <span id="suctionLengthError" class="error">Invalid input. Please enter a strictly positive float.</span><br>
 
         <label for="numDischargeElbows">Number of Discharge Elbows:</label>
-        <input type="number" step="1" id="numDischargeElbows" name="numDischargeElbows" oninput="validateField(this, 'int', 2)" required>
+        <input type="number" step="1" id="numDischargeElbows" name="numDischargeElbows" oninput="validateField(this, 'int', 2, Infinity)" required>
         <span id="numDischargeElbowsError" class="error">Invalid input. Please enter a strictly positive integer higher than 2.</span><br>
 
         <label for="dischargeDiameter">Discharge Diameter (in mm):</label>
-        <input type="number" step="any" id="dischargeDiameter" name="dischargeDiameter" oninput="validateField(this, 'float', 0)" required>
+        <input type="number" step="any" id="dischargeDiameter" name="dischargeDiameter" oninput="validateField(this, 'float', 50, 600)" required>
         <span id="dischargeDiameterError" class="error">Please choose a diameter between 50 and 600 mm.</span><br>
 
         <label for="dischargeHeight">Discharge Height (in meters):</label>
-        <input type="number" step="any" id="dischargeHeight" name="dischargeHeight" oninput="validateField(this, 'float', 0)" required>
+        <input type="number" step="any" id="dischargeHeight" name="dischargeHeight" oninput="validateField(this, 'float', 0, Infinity)" required>
         <span id="dischargeHeightError" class="error">Invalid input. Please enter a strictly positive float.</span><br>
 
         <label for="dischargeLength">Discharge Length (in meters):</label>
-        <input type="number" step="any" id="dischargeLength" name="dischargeLength" oninput="validateField(this, 'float', 0)" required>
+        <input type="number" step="any" id="dischargeLength" name="dischargeLength" oninput="validateField(this, 'float', 0, Infinity)" required>
         <span id="dischargeLengthError" class="error">Invalid input. Please enter a strictly positive float.</span><br>
 
         <button type="button" onclick={submitForm()}>Results</button>
@@ -127,7 +127,7 @@
     <script>
         
 
-        function validateField(input, type, minValue) {
+        function validateField(input, type, minValue, maxValue) {
             const value = type === 'float' ? parseFloat(input.value) : parseInt(input.value);
             const errorSpan = document.getElementById(input.id + 'Error');
 
@@ -138,7 +138,7 @@
                     errorSpan.style.display = 'none';
                 }
             } else {
-                if (isNaN(value) || value <= minValue) {
+                if (isNaN(value) || value <= minValue || value > maxValue) {
                     errorSpan.style.display = 'block';
                 } else {
                     errorSpan.style.display = 'none';
