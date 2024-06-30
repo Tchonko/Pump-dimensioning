@@ -6,17 +6,19 @@
     <title>Pump Dimensioning Form</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: "Times New Roman", Times, serif;
             background-image: url(mining.jpg);
             margin: 20px;
         }
 
         h1 {
             text-align: center;
+            color:red;
+            font-size: 50px;
         }
 
         form {
-            max-width: 400px;
+            max-width: 800px;
             margin: auto;
             background-color: #f2f2f2;
             padding: 20px;
@@ -113,9 +115,9 @@
         <input type="number" step="any" id="dischargeHeight" name="dischargeHeight" oninput="validateField(this, 'float', 0, Infinity)" required>
         <span id="dischargeHeightError" class="error">Invalid input. Please enter a strictly positive float.</span><br>
 
-        <label for="dischargeLength">Discharge Length (in meters):</label>
-        <input type="number" step="any" id="dischargeLength" name="dischargeLength" oninput="validateField(this, 'float', 0, Infinity)" required>
-        <span id="dischargeLengthError" class="error">Invalid input. Please enter a strictly positive float.</span><br>
+        <label for="distanceWell">Distance to well (in meters):</label>
+        <input type="number" step="any" id="distanceWell" name="distanceWell" oninput="validateField(this, 'float', 0, Infinity)" required>
+        <span id="distanceWellError" class="error">Invalid input. Please enter a strictly positive float.</span><br>
 
         <button type="button" onclick={submitForm()}>Results</button>
     </form>
@@ -174,10 +176,12 @@
         }
 
         function VerifyDischargeParameters() {
-            const dischargeLength = parseFloat(document.getElementById('dischargeLength').value);
+            const distanceWell = parseFloat(document.getElementById('distanceWell').value);
             const dischargeDiameter = parseFloat(document.getElementById('dischargeDiameter').value) * 0.001;
             const dischargeHeight = parseFloat(document.getElementById('dischargeHeight').value);
             const numDischargeElbows = parseFloat(document.getElementById('numDischargeElbows').value);
+
+            const dischargeLength = dischargeHeight + distanceWell;
 
             let min_value = dischargeHeight + 1.5 * numDischargeElbows * dischargeDiameter;
             if (dischargeLength < min_value) {
@@ -231,6 +235,7 @@
             let fraction = (4 * flow) / (Math.PI * Math.pow(diameter, 2));
             let g = 9.81;
             let delta_height = lambda * (length / (diameter * 2 * g)) * Math.pow(fraction, 2);
+            console.log(delta_height);
             return delta_height;
         }
 
@@ -269,7 +274,7 @@
                 errorToDisplay = true;
             }
             if (!VerifyDischargeParameters()) {
-                errorText = errorText + "The discharge length is too small in comparison to the others discharge parameters<br>";
+                errorText = errorText + "The distance to Well is too small in comparison to the others discharge parameters<br>";
                 errorToDisplay = true;
             }
             if (!validFlow) {
@@ -313,10 +318,12 @@
                 const numSuctionElbows = parseFloat(document.getElementById('numSuctionElbows').value);
                 const suctionLength = parseFloat(document.getElementById('suctionLength').value);
                 const suctionDiameter = parseFloat(document.getElementById('suctionDiameter').value) * 0.001;
-                const dischargeLength = parseFloat(document.getElementById('dischargeLength').value);
+                const distanceWell = parseFloat(document.getElementById('distanceWell').value);
                 const dischargeDiameter = parseFloat(document.getElementById('dischargeDiameter').value) * 0.001;
                 const dischargeHeight = parseFloat(document.getElementById('dischargeHeight').value);
                 const numDischargeElbows = parseFloat(document.getElementById('numDischargeElbows').value);
+
+                const dischargeLength = distanceWell + dischargeHeight;
                 const viscosity = 1.004 * Math.pow(10, -6);
 
                 let [validFlow, flow, lambda, errorTextFlow] = flowControl();
